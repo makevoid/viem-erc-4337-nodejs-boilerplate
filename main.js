@@ -1,35 +1,34 @@
-// Import the required modules.
-import { createSmartAccountClient } from "permissionless";
-import { createPaymasterClient } from "viem/account-abstraction";
+import { createPublicClient, http, parseEther } from "viem";
+import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
-import { http } from "viem";
-import dotenv from "dotenv";
+import { privateKeyToAccount } from "viem/accounts";
 
-dotenv.config();
-
-const pimlicoApiKey = process.env.PIMLICO_API_KEY;
-
-const paymaster = createPaymasterClient({
-  transport: http(`https://api.pimlico.io/v2/sepolia/rpc?apikey=${pimlicoApiKey}`),
-});
-
-const account =
-  toSimpleSmartAccount <
-  entryPointVersion >
-  {
-    client: getPublicClient(anvilRpc),
-    owner: privateKeyToAccount(generatePrivateKey()),
-  };
-
-// Create the required clients.
-const bundlerClient = createSmartAccountClient({
-  account,
-  paymaster,
+const client = createPublicClient({
   chain: sepolia,
-  bundlerTransport: http(`https://api.pimlico.io/v2/sepolia/rpc?apikey=${pimlicoApiKey}`), // Use any bundler url
+  transport: http(),
 });
 
-// Consume bundler, paymaster, and smart account actions!
-const userOperationReceipt = await bundlerClient.getUserOperationReceipt({
-  hash: "0x5faea6a3af76292c2b23468bbea96ef63fb31360848be195748437f0a79106c8",
+const bundlerClient = createBundlerClient({
+  client,
+  transport: http("https://public.pimlico.io/v2/1/rpc"),
 });
+
+const owner = privateKeyToAccount("0x...");
+
+const account = await toCoinbaseSmartAccount({
+  client,
+  owners: [owner],
+  version: "1.1",
+});
+
+const hash = await bundlerClient.sendUserOperation({
+  account,
+  calls: [
+    {
+      to: "0xcb98643b8786950F0461f3B0edf99D88F274574D",
+      value: parseEther("0.001"),
+    },
+  ],
+});
+
+const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
