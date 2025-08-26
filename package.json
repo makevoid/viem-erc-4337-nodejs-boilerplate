@@ -1,0 +1,15 @@
+{
+  "name": "try-permissionless",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "permissionless": "^0.2.54",
+    "viem": "^2.35.1"
+  }
+}
