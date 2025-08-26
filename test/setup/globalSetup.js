@@ -5,6 +5,9 @@ export async function setup() {
   console.log('📋 Requirements: Anvil must be running on http://127.0.0.1:8545');
   console.log('📋 Start Anvil with: anvil');
   
+  // Set NODE_ENV to test for proper factory address selection
+  process.env.NODE_ENV = 'test';
+  
   const deployer = new ContractDeployer();
   
   try {

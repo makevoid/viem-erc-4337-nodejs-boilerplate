@@ -1,5 +1,5 @@
 import { createPublicClient, createWalletClient, http, parseEther, formatEther } from "viem";
-import { createBundlerClient, toSoladySmartAccount } from "viem/account-abstraction";
+import { createBundlerClient, toCoinbaseSmartAccount, toSoladySmartAccount } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { FundingUtils } from "./utils/funding.js";
@@ -37,13 +37,45 @@ export class SmartAccountManager {
   }
 
   async initialize() {
-    // Create smart account using Solady
-    this.account = await toSoladySmartAccount({
-      client: this.client,
-      owner: this.owner,
-      factoryAddress: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F", // Deployed Solady factory on Anvil
-      salt: this.salt,
-    });
+    try {
+      console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
+      
+      if (process.env.NODE_ENV === 'test') {
+        // Use Solady smart accounts for testing with local Anvil deployment
+        const factoryAddress = "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F";
+        console.log(`Initializing Solady smart account with factory: ${factoryAddress}`);
+        console.log(`Salt: ${this.salt}`);
+        
+        this.account = await toSoladySmartAccount({
+          client: this.client,
+          owner: this.owner,
+          factoryAddress,
+          salt: this.salt,
+        });
+      } else {
+        // Use Coinbase smart accounts for production
+        console.log('Initializing Coinbase smart account for production');
+        
+        this.account = await toCoinbaseSmartAccount({
+          client: this.client,
+          owners: [this.owner],
+          version: "1.1",
+        });
+      }
+      
+      console.log(`Smart account initialized: ${this.account.address}`);
+    } catch (error) {
+      console.error('❌ Smart account initialization failed');
+      console.error('Environment:', process.env.NODE_ENV || 'production');
+      console.error('Owner address:', this.owner.address);
+      if (process.env.NODE_ENV === 'test') {
+        console.error('Factory address:', "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F");
+        console.error('Salt:', this.salt);
+      }
+      console.error('Full error:', error);
+      console.error('Stack trace:', error.stack);
+      throw error;
+    }
 
     // Create bundler client
     this.bundlerClient = createBundlerClient({
