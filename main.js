@@ -2,6 +2,9 @@ import { createPublicClient, http, parseEther } from "viem";
 import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const client = createPublicClient({
   chain: sepolia,
@@ -13,7 +16,7 @@ const bundlerClient = createBundlerClient({
   transport: http("https://public.pimlico.io/v2/1/rpc"),
 });
 
-const owner = privateKeyToAccount("0x...");
+const owner = privateKeyToAccount(process.env.PRIVATE_KEY);
 
 const account = await toCoinbaseSmartAccount({
   client,
@@ -25,7 +28,7 @@ const hash = await bundlerClient.sendUserOperation({
   account,
   calls: [
     {
-      to: "0xcb98643b8786950F0461f3B0edf99D88F274574D",
+      to: owner.address, // NOTE: send transaction to yourself
       value: parseEther("0.001"),
     },
   ],
