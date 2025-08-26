@@ -1,9 +1,11 @@
 import { parseEther, formatEther } from "viem";
+import { GasUtils } from "./gasUtils.js";
 
 export class FundingUtils {
-  constructor(client, owner) {
+  constructor(client, walletClient) {
     this.client = client;
-    this.owner = owner;
+    this.walletClient = walletClient;
+    this.gasUtils = new GasUtils(client);
   }
 
   async checkBalance(address) {
@@ -21,16 +23,19 @@ export class FundingUtils {
 
       console.log(`Funding smart account with ${formatEther(fundingAmount)} ETH...`);
 
-      const hash = await this.client.sendTransaction({
-        account: this.owner,
-        to: smartAccountAddress,
-        value: fundingAmount,
-      });
+      const { hash, receipt } = await this.gasUtils.sendTransactionWithBump(
+        this.walletClient,
+        {
+          to: smartAccountAddress,
+          value: fundingAmount,
+        },
+        {
+          gasBumpGwei: 1,
+          priorityBumpPercent: 20,
+          timeout: 60000, // 60 second timeout for funding
+        }
+      );
 
-      console.log(`Funding transaction hash: ${hash}`);
-
-      // Wait for transaction confirmation
-      const receipt = await this.client.waitForTransactionReceipt({ hash });
       console.log(`Funding transaction confirmed in block ${receipt.blockNumber}`);
 
       const newBalance = await this.checkBalance(smartAccountAddress);
@@ -44,7 +49,7 @@ export class FundingUtils {
   }
 
   async ensureFunding(smartAccountAddress, minBalance = parseEther("0.01")) {
-    const eoaBalance = await this.checkBalance(this.owner.address);
+    const eoaBalance = await this.checkBalance(this.walletClient.account.address);
     const smartAccountBalance = await this.checkBalance(smartAccountAddress);
 
     console.log(`EOA Balance: ${formatEther(eoaBalance)} ETH`);

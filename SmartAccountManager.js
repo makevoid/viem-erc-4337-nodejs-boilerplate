@@ -1,4 +1,4 @@
-import { createPublicClient, http, parseEther, formatEther } from "viem";
+import { createPublicClient, createWalletClient, http, parseEther, formatEther } from "viem";
 import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -12,17 +12,25 @@ export class SmartAccountManager {
     this.privateKey = options.privateKey || process.env.PRIVATE_KEY;
     this.pimlicoApiKey = options.pimlicoApiKey || process.env.PIMLICO_API_KEY;
     this.chain = options.chain || sepolia;
+    this.rpcUrl = options.rpcUrl || "https://ethereum-sepolia-rpc.publicnode.com";
     this.bundlerUrl = options.bundlerUrl || "https://public.pimlico.io/v2/1/rpc";
     this.minBalance = options.minBalance || parseEther("0.01");
 
     // Initialize clients
     this.client = createPublicClient({
       chain: this.chain,
-      transport: http(),
+      transport: http(this.rpcUrl),
     });
 
     this.owner = privateKeyToAccount(this.privateKey);
-    this.fundingUtils = new FundingUtils(this.client, this.owner);
+    
+    this.walletClient = createWalletClient({
+      account: this.owner,
+      chain: this.chain,
+      transport: http(this.rpcUrl),
+    });
+
+    this.fundingUtils = new FundingUtils(this.client, this.walletClient);
     this.account = null;
     this.bundlerClient = null;
   }
