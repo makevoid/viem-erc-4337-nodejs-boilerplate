@@ -3,6 +3,11 @@ import { createSmartAccountClient } from "permissionless";
 import { createPaymasterClient } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
 import { http } from "viem";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const pimlicoApiKey = process.env.PIMLICO_API_KEY;
 
 const paymaster = createPaymasterClient({
   transport: http(`https://api.pimlico.io/v2/sepolia/rpc?apikey=${pimlicoApiKey}`),

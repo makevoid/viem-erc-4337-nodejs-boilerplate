@@ -9,6 +9,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "permissionless": "^0.2.54",
     "viem": "^2.35.1"
   },
