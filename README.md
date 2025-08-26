@@ -105,6 +105,54 @@ Currently configured for **Ethereum Sepolia Testnet**:
 
 No tests are currently configured, but the project includes vitest as a dev dependency for future test implementation.
 
+### Testing
+
+The project includes comprehensive tests using Vitest with local Anvil integration:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Setup test contracts (optional - done automatically)
+npm run test:setup
+```
+
+#### Test Setup
+
+Tests use a local Anvil instance for blockchain simulation:
+
+1. **Start Anvil** (in separate terminal):
+   ```bash
+   anvil
+   ```
+
+2. **Run Tests**:
+   ```bash
+   npm test
+   ```
+
+The test suite includes:
+- **Unit Tests**: Individual class and utility testing
+- **Integration Tests**: End-to-end smart account flows
+- **Contract Deployment**: Automatic setup of required ERC-4337 contracts
+- **Local Funding**: Test accounts are automatically funded with 10 ETH
+
+#### Test Structure
+
+- `test/setup/` - Global test configuration and contract deployment
+- `test/unit/` - Unit tests for individual classes
+- `test/integration/` - Integration tests with full blockchain simulation
+
+Tests cover:
+- Smart account manager functionality
+- Automatic funding logic
+- Gas optimization utilities
+- Error handling and edge cases
+- Network interaction patterns
+
 
 ---
 

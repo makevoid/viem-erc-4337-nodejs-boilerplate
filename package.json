@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:claude": "vitest run --reporter=verbose --bail=1",
+    "test:setup": "node test/setup/deployContracts.js"
   },
   "author": "",
   "license": "MIT",

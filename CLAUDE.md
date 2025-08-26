@@ -5,8 +5,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Common Commands
 
 - `npm start` - Runs the main smart account demo
+- `npm test` - Runs full test suite (requires `anvil` running)
+- `npm run test:watch` - Runs tests in watch mode
+- `npm run test:setup` - Manually deploy test contracts to Anvil
 - `npm install` - Installs dependencies
 - `node main.js` - Direct execution of the main example
+
+### Test Commands
+
+Before running tests, start Anvil in a separate terminal:
+```bash
+anvil
+```
+
+Tests automatically deploy required ERC-4337 contracts and fund test accounts.
 
 ## Architecture Overview
 
