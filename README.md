@@ -1,0 +1,111 @@
+# try-permissionless-js
+
+A Node.js application for experimenting with Ethereum Account Abstraction using Coinbase Smart Accounts and the Viem library.
+
+## What This Project Does
+
+This project demonstrates how to:
+- Create and manage Coinbase Smart Accounts (ERC-4337)
+- Automatically fund smart accounts from EOA when needed
+- Execute user operations with optimized gas settings
+- Handle self-funded transactions without requiring a paymaster
+
+## Architecture
+
+The project follows a modular OOP design:
+
+- **`SmartAccountManager`**: Main class that orchestrates smart account operations
+- **`FundingUtils`**: Handles automatic funding of smart accounts from EOA
+- **`GasUtils`**: Provides gas estimation with bumping logic for reliable transactions
+- **`main.js`**: Example usage showing a self-transaction
+
+## Setup
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create `.env` file from the sample:
+   ```bash
+   cp .env.sample .env
+   ```
+
+3. Configure your environment variables in `.env`:
+   ```
+   PIMLICO_API_KEY=your_pimlico_api_key_here
+   PRIVATE_KEY=0x...your_private_key_here
+   ```
+
+## Usage
+
+### Basic Example
+
+```bash
+npm start
+```
+
+This runs the main example which:
+1. Creates a smart account
+2. Displays EOA and smart account balances
+3. Automatically funds the smart account if needed
+4. Executes a 0.001 ETH self-transaction
+5. Shows final balances
+
+### Programmatic Usage
+
+```javascript
+import { SmartAccountManager } from "./SmartAccountManager.js";
+import { parseEther } from "viem";
+
+const manager = new SmartAccountManager({
+  minBalance: parseEther("0.005"), // Custom minimum balance
+  rpcUrl: "https://your-custom-rpc.com", // Optional custom RPC
+});
+
+await manager.initialize();
+await manager.displayBalances();
+
+// Send to any address
+await manager.transferTo("0x...", parseEther("0.001"));
+```
+
+## Key Features
+
+### Automatic Funding
+- Smart accounts are automatically funded from your EOA when balance falls below minimum threshold
+- Configurable minimum balance (default: 0.01 ETH)
+- Includes extra gas buffer for transactions
+
+### Gas Optimization
+- Automatic gas estimation with bumping (+3 gwei max fee, +20% priority fee)
+- Fallback gas values if estimation fails
+- Extended timeouts for reliable transaction confirmation
+
+### Self-Funded Transactions
+- No paymaster required - smart account pays its own transaction fees
+- Uses Pimlico bundler infrastructure for ERC-4337 operations
+- Proper gas estimation for user operations
+
+## Network Configuration
+
+Currently configured for **Ethereum Sepolia Testnet**:
+- RPC: `https://ethereum-sepolia-rpc.publicnode.com`
+- Bundler: `https://api.pimlico.io/v2/sepolia/rpc`
+- Chain: Sepolia (chain ID: 11155111)
+
+## Environment Variables
+
+- `PIMLICO_API_KEY`: Your Pimlico API key for bundler services
+- `PRIVATE_KEY`: Your EOA private key (will fund smart account operations)
+
+## Development
+
+The codebase uses ES modules and requires Node.js with native ES module support.
+
+Run the application:
+```bash
+npm start
+```
+
+No tests are currently configured, but the project includes vitest as a dev dependency for future test implementation.
