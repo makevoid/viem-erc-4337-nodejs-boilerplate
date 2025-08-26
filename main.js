@@ -6,6 +6,16 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const owner = privateKeyToAccount(process.env.PRIVATE_KEY);
+
+const account = await toCoinbaseSmartAccount({
+  client,
+  owners: [owner],
+  version: "1.1",
+});
+
+// TODO: get balance here
+
 const client = createPublicClient({
   chain: sepolia,
   transport: http(),
@@ -14,14 +24,6 @@ const client = createPublicClient({
 const bundlerClient = createBundlerClient({
   client,
   transport: http("https://public.pimlico.io/v2/1/rpc"),
-});
-
-const owner = privateKeyToAccount(process.env.PRIVATE_KEY);
-
-const account = await toCoinbaseSmartAccount({
-  client,
-  owners: [owner],
-  version: "1.1",
 });
 
 const hash = await bundlerClient.sendUserOperation({
