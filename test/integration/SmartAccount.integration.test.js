@@ -57,9 +57,17 @@ describe('SmartAccount Integration Tests', () => {
       expect(balance).toBeGreaterThan(parseEther("5"));
     });
 
-    // Note: Full smart account initialization requires proper ERC-4337 contracts
-    // which are complex to deploy in test environment. These tests focus on 
-    // the parts that can work with anvil's basic functionality.
+    it('should initialize smart account with real Solady contracts', async () => {
+      // Now we have real contracts deployed, test actual initialization
+      const account = await manager.initialize();
+      
+      expect(account).toBeDefined();
+      expect(account.address).toMatch(/^0x[a-fA-F0-9]{40}$/);
+      expect(manager.account).toBe(account);
+      expect(manager.bundlerClient).toBeDefined();
+      
+      console.log(`✅ Smart Account initialized: ${account.address}`);
+    });
 
     it('should validate funding logic calculations', async () => {
       const currentBalance = parseEther("0.5");
@@ -146,14 +154,57 @@ describe('SmartAccount Integration Tests', () => {
     });
   });
 
+  describe('Smart Account Balance and Funding', () => {
+    it('should get smart account balances after initialization', async () => {
+      // Account should be initialized from previous test
+      expect(manager.account).toBeDefined();
+      
+      const balances = await manager.getBalances();
+      
+      expect(balances).toHaveProperty('eoa');
+      expect(balances).toHaveProperty('smartAccount');
+      expect(balances.eoa.address).toBe(testAccount.address);
+      expect(balances.smartAccount.address).toBe(manager.account.address);
+      
+      console.log(`EOA: ${balances.eoa.balanceFormatted} ETH`);
+      console.log(`Smart Account: ${balances.smartAccount.balanceFormatted} ETH`);
+    });
+
+    it('should fund smart account when needed', async () => {
+      const initialBalances = await manager.getBalances();
+      const smartAccountBalance = initialBalances.smartAccount.balance;
+      
+      const fundingResult = await manager.ensureFunding();
+      
+      if (fundingResult) {
+        console.log(`✅ Smart Account funded: ${fundingResult.hash}`);
+        
+        const newBalances = await manager.getBalances();
+        expect(newBalances.smartAccount.balance).toBeGreaterThan(smartAccountBalance);
+      } else {
+        console.log('Smart Account already sufficiently funded');
+        expect(smartAccountBalance).toBeGreaterThanOrEqual(manager.minBalance);
+      }
+    });
+  });
+
   describe('Error Handling', () => {
-    it('should handle initialization errors gracefully', async () => {
-      expect(manager.account).toBeNull();
-      expect(manager.bundlerClient).toBeNull();
+    it('should handle initialization errors gracefully for uninitialized manager', async () => {
+      // Create a new manager that's not initialized
+      const uninitializedManager = new SmartAccountManager({
+        privateKey: TEST_CONFIG.testPrivateKeys[0],
+        rpcUrl: TEST_CONFIG.rpcUrl,
+        chain: TEST_CONFIG.chain,
+        bundlerUrl: TEST_CONFIG.rpcUrl,
+        minBalance: parseEther("0.001"),
+      });
+
+      expect(uninitializedManager.account).toBeNull();
+      expect(uninitializedManager.bundlerClient).toBeNull();
 
       // Methods that require initialization should throw
-      await expect(manager.getBalances()).rejects.toThrow();
-      await expect(manager.sendUserOperation([])).rejects.toThrow();
+      await expect(uninitializedManager.getBalances()).rejects.toThrow();
+      await expect(uninitializedManager.sendUserOperation([])).rejects.toThrow();
     });
 
     it('should validate transaction calls', async () => {

@@ -15,6 +15,7 @@ export class SmartAccountManager {
     this.rpcUrl = options.rpcUrl || "https://ethereum-sepolia-rpc.publicnode.com";
     this.bundlerUrl = options.bundlerUrl || `https://api.pimlico.io/v2/sepolia/rpc?apikey=${this.pimlicoApiKey}`;
     this.minBalance = options.minBalance || parseEther("0.01");
+    this.salt = options.salt || "0x0";
 
     // Initialize clients
     this.client = createPublicClient({
@@ -41,7 +42,7 @@ export class SmartAccountManager {
       client: this.client,
       owner: this.owner,
       factoryAddress: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F", // Deployed Solady factory on Anvil
-      salt: "0x0",
+      salt: this.salt,
     });
 
     // Create bundler client
