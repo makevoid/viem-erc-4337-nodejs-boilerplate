@@ -1,5 +1,5 @@
 import { createPublicClient, createWalletClient, http, parseEther, formatEther } from "viem";
-import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
+import { createBundlerClient, toSoladySmartAccount } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { FundingUtils } from "./utils/funding.js";
@@ -36,11 +36,12 @@ export class SmartAccountManager {
   }
 
   async initialize() {
-    // Create smart account
-    this.account = await toCoinbaseSmartAccount({
+    // Create smart account using Solady
+    this.account = await toSoladySmartAccount({
       client: this.client,
-      owners: [this.owner],
-      version: "1.1",
+      owner: this.owner,
+      factoryAddress: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F", // Deployed Solady factory on Anvil
+      salt: "0x0",
     });
 
     // Create bundler client

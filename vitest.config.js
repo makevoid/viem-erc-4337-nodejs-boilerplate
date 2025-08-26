@@ -13,5 +13,12 @@ export default defineConfig({
         singleFork: true, // Use single fork to share deployed contracts
       },
     },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/test/foundry/lib/**', // Exclude foundry library tests
+    ],
   },
 });

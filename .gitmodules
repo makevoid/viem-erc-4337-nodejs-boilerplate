@@ -1,0 +1,12 @@
+[submodule "test/foundry/lib/forge-std"]
+	path = test/foundry/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "test/foundry/lib/solady"]
+	path = test/foundry/lib/solady
+	url = https://github.com/vectorized/solady
+[submodule "test/foundry/lib/account-abstraction"]
+	path = test/foundry/lib/account-abstraction
+	url = https://github.com/eth-infinitism/account-abstraction
+[submodule "test/foundry/lib/openzeppelin-contracts"]
+	path = test/foundry/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

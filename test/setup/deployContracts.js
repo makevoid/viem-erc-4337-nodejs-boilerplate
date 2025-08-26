@@ -49,7 +49,12 @@ export class ContractDeployer {
       transport: http("http://127.0.0.1:8545"),
     });
 
-    this.deployedContracts = {};
+    // Use addresses from Forge deployment
+    this.deployedContracts = {
+      entryPoint: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      factory: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+      implementation: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319"
+    };
   }
 
   async deployEntryPoint() {
@@ -113,24 +118,37 @@ export class ContractDeployer {
   }
 
   async deployAll() {
-    console.log("Starting contract deployment on Anvil...");
+    console.log("Using pre-deployed Solady contracts on Anvil...");
     
     try {
       // Check anvil connection
       const blockNumber = await this.anvilClient.getBlockNumber();
       console.log(`Connected to Anvil at block ${blockNumber}`);
       
-      await this.deployEntryPoint();
-      await this.deploySmartAccountFactory();
+      // Verify contracts exist
+      const entryPointCode = await this.anvilClient.getCode({ address: this.deployedContracts.entryPoint });
+      const factoryCode = await this.anvilClient.getCode({ address: this.deployedContracts.factory });
+      
+      if (!entryPointCode || entryPointCode === "0x") {
+        throw new Error("EntryPoint contract not found. Run forge deployment first.");
+      }
+      
+      if (!factoryCode || factoryCode === "0x") {
+        throw new Error("ERC4337Factory contract not found. Run forge deployment first.");
+      }
+      
+      console.log("✅ EntryPoint contract found at:", this.deployedContracts.entryPoint);
+      console.log("✅ ERC4337Factory contract found at:", this.deployedContracts.factory);
+      
       await this.fundTestAccounts();
       
-      console.log("Deployment completed successfully!");
-      console.log("Deployed contracts:", this.deployedContracts);
+      console.log("Setup completed successfully!");
+      console.log("Available contracts:", this.deployedContracts);
       
       return this.deployedContracts;
       
     } catch (error) {
-      console.error("Deployment failed:", error);
+      console.error("Setup failed:", error);
       throw error;
     }
   }
