@@ -1,6 +1,6 @@
 # viem-erc-4337-boilerplate
 
-A Node.js application for experimenting with Ethereum Account Abstraction using Coinbase Smart Accounts / Solady Smart Accounts and the Viem library.
+A Node.js application for experimenting with Ethereum Account Abstraction using **Solady Smart Accounts** and the Viem library with comprehensive testing on local Anvil blockchain.
 
 ## What This Project Does
 
@@ -99,59 +99,74 @@ Currently configured for **Ethereum Sepolia Testnet**:
 - `PIMLICO_API_KEY`: Your Pimlico API key for bundler services
 - `PRIVATE_KEY`: Your EOA private key (will fund smart account operations)
 
-## Switch to Solady Contracts
+## Smart Account Implementation
 
-- TODO (readme will be updated with instructions to do so) - here is the list of the currently supported Viem contracts - [LIST](https://github.com/wevm/viem/tree/main/src/account-abstraction/accounts/implementations)
+This project uses **Solady Smart Accounts** with:
+- Real contract deployments via Foundry on local Anvil testing
+- Deterministic address generation using salt parameter
+- ERC-4337 compliant implementation with EntryPoint integration
+- Factory pattern for efficient smart account creation
 
-No tests are currently configured, but the project includes vitest as a dev dependency for future test implementation.
+**Deployed Contract Addresses (Anvil):**
+- EntryPoint: `0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f`
+- Solady Factory: `0x7a2088a1bFc9d81c55368AE168C2C02570cB814F`
+- Implementation: `0x4A679253410272dd5232B3Ff7cF5dbB88f295319`
 
-### Testing
+For other supported smart account types, see: [Viem Account Implementations](https://github.com/wevm/viem/tree/main/src/account-abstraction/accounts/implementations)
 
-The project includes comprehensive tests using Vitest with local Anvil integration:
+## Testing
+
+Comprehensive test suite with **56 tests** using Vitest and local Anvil blockchain:
 
 ```bash
-# Run all tests
+# Run all tests (requires anvil running)
 npm test
+
+# Run tests with detailed output
+npm run test:claude
 
 # Run tests in watch mode
 npm run test:watch
 
-# Setup test contracts (optional - done automatically)
+# Deploy contracts manually (optional - done automatically)
 npm run test:setup
 ```
 
-#### Test Setup
+### Test Setup
 
-Tests use a local Anvil instance for blockchain simulation:
+**Prerequisites:** Start Anvil in a separate terminal:
+```bash
+anvil
+```
 
-1. **Start Anvil** (in separate terminal):
-   ```bash
-   anvil
-   ```
+### Test Architecture
 
-2. **Run Tests**:
-   ```bash
-   npm test
-   ```
+**Real Contract Deployment:**
+- Uses Foundry to deploy actual Solady ERC-4337 contracts
+- EntryPoint, Factory, and Implementation contracts on local Anvil
+- Automatic test account funding (10 ETH each)
+- No mocking - full blockchain integration testing
 
-The test suite includes:
-- **Unit Tests**: Individual class and utility testing
-- **Integration Tests**: End-to-end smart account flows
-- **Contract Deployment**: Automatic setup of required ERC-4337 contracts
-- **Local Funding**: Test accounts are automatically funded with 10 ETH
+**Test Structure:**
+- `test/unit/` - Unit tests for `SmartAccountManager`, `FundingUtils`, `GasUtils`
+- `test/integration/` - Complete integration tests with real smart accounts
+- `test/foundry/` - Solady contract deployment via Forge
+- `test/setup/` - Global test configuration and bootstrapping
 
-#### Test Structure
+**Coverage Areas:**
+- ✅ Smart account initialization with deterministic addresses
+- ✅ Automatic EOA → Smart Account funding logic
+- ✅ Gas optimization with bumping strategies
+- ✅ User operation preparation and execution
+- ✅ Balance management and monitoring
+- ✅ Error handling and network failures
+- ✅ Multi-account scenarios and transfers
 
-- `test/setup/` - Global test configuration and contract deployment
-- `test/unit/` - Unit tests for individual classes
-- `test/integration/` - Integration tests with full blockchain simulation
-
-Tests cover:
-- Smart account manager functionality
-- Automatic funding logic
-- Gas optimization utilities
-- Error handling and edge cases
-- Network interaction patterns
+**Test Features:**
+- Real Solady contracts deployed fresh for each test run
+- Parallel test execution with proper isolation
+- Expected failure handling for incomplete bundler infrastructure
+- Gas estimation testing with fallback scenarios
 
 
 ---
