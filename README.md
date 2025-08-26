@@ -162,6 +162,16 @@ anvil
 - ✅ Error handling and network failures
 - ✅ Multi-account scenarios and transfers
 
+**Multi-Account Testing:**
+The test suite creates multiple smart account managers to thoroughly test:
+- **Different Owners**: Using separate EOA private keys (`testPrivateKeys[0]`, `testPrivateKeys[1]`)
+- **Different Salt Values**: Same owner with different salts (`"0x0"`, `"0x1"`) creates different smart account addresses
+- **Deterministic Behavior**: Same owner + same salt always generates the same smart account address
+- **Inter-Account Operations**: Testing transfers between different smart accounts
+- **Independent Management**: Each smart account maintains separate balances and operates independently
+
+This mirrors real-world usage where users might create multiple smart accounts from a single EOA for different purposes (personal, business, savings, etc.).
+
 **Test Features:**
 - Real Solady contracts deployed fresh for each test run
 - Parallel test execution with proper isolation
