@@ -19,6 +19,10 @@ async function main() {
     console.log("Final balances:");
     await manager.displayBalances();
     
+    // Exit cleanly
+    console.log("\n✅ Demo completed successfully!");
+    process.exit(0);
+    
   } catch (error) {
     console.error("Error:", error.message);
     process.exit(1);
