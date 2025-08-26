@@ -13,7 +13,7 @@ export class SmartAccountManager {
     this.pimlicoApiKey = options.pimlicoApiKey || process.env.PIMLICO_API_KEY;
     this.chain = options.chain || sepolia;
     this.rpcUrl = options.rpcUrl || "https://ethereum-sepolia-rpc.publicnode.com";
-    this.bundlerUrl = options.bundlerUrl || "https://public.pimlico.io/v2/1/rpc";
+    this.bundlerUrl = options.bundlerUrl || `https://api.pimlico.io/v2/sepolia/rpc?apikey=${this.pimlicoApiKey}`;
     this.minBalance = options.minBalance || parseEther("0.01");
 
     // Initialize clients
@@ -105,10 +105,33 @@ export class SmartAccountManager {
     await this.ensureFunding();
 
     console.log("Sending user operation...");
-    const hash = await this.bundlerClient.sendUserOperation({
+    
+    // Prepare user operation without paymaster (self-funded)
+    const userOpRequest = {
       account: this.account,
       calls,
-    });
+    };
+
+    // Estimate gas for the user operation
+    try {
+      const gasEstimate = await this.bundlerClient.estimateUserOperationGas(userOpRequest);
+      console.log(`Gas estimate - Call: ${gasEstimate.callGasLimit}, Verification: ${gasEstimate.verificationGasLimit}, PreVerification: ${gasEstimate.preVerificationGas}`);
+      
+      // Add gas estimates to the request
+      userOpRequest.callGasLimit = gasEstimate.callGasLimit;
+      userOpRequest.verificationGasLimit = gasEstimate.verificationGasLimit;
+      userOpRequest.preVerificationGas = gasEstimate.preVerificationGas;
+      userOpRequest.maxFeePerGas = gasEstimate.maxFeePerGas;
+      userOpRequest.maxPriorityFeePerGas = gasEstimate.maxPriorityFeePerGas;
+    } catch (error) {
+      console.warn("Gas estimation failed, using fallback values:", error.message);
+      // Fallback gas values
+      userOpRequest.callGasLimit = 100000n;
+      userOpRequest.verificationGasLimit = 100000n;
+      userOpRequest.preVerificationGas = 21000n;
+    }
+
+    const hash = await this.bundlerClient.sendUserOperation(userOpRequest);
 
     console.log(`User Operation hash: ${hash}`);
 
