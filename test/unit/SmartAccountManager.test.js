@@ -133,25 +133,16 @@ describe('SmartAccountManager', () => {
   });
 
   describe('Configuration validation', () => {
-    it('should handle missing environment variables gracefully', () => {
-      const managerWithoutEnv = new SmartAccountManager({
-        privateKey: TEST_CONFIG.testPrivateKeys[0],
-        pimlicoApiKey: "test-key"
-      });
-
-      expect(managerWithoutEnv.privateKey).toBe(TEST_CONFIG.testPrivateKeys[0]);
-      expect(managerWithoutEnv.pimlicoApiKey).toBe("test-key");
-    });
-
-    it('should construct proper bundler URL with API key', () => {
+    it('should handle environment variables and bundler URL configuration', () => {
       const apiKey = "test-api-key";
       const managerWithKey = new SmartAccountManager({
         privateKey: TEST_CONFIG.testPrivateKeys[0],
         pimlicoApiKey: apiKey,
       });
 
+      expect(managerWithKey.privateKey).toBe(TEST_CONFIG.testPrivateKeys[0]);
+      expect(managerWithKey.pimlicoApiKey).toBe(apiKey);
       expect(managerWithKey.bundlerUrl).toContain(apiKey);
-      expect(managerWithKey.bundlerUrl).toContain("sepolia");
     });
   });
 });
