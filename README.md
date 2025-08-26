@@ -1,6 +1,6 @@
-# try-permissionless-js
+# viem-erc-4337-boilerplate
 
-A Node.js application for experimenting with Ethereum Account Abstraction using Coinbase Smart Accounts and the Viem library.
+A Node.js application for experimenting with Ethereum Account Abstraction using Coinbase Smart Accounts / Solady Smart Accounts and the Viem library.
 
 ## What This Project Does
 
@@ -99,13 +99,13 @@ Currently configured for **Ethereum Sepolia Testnet**:
 - `PIMLICO_API_KEY`: Your Pimlico API key for bundler services
 - `PRIVATE_KEY`: Your EOA private key (will fund smart account operations)
 
-## Development
+## Switch to Solady Contracts
 
-The codebase uses ES modules and requires Node.js with native ES module support.
-
-Run the application:
-```bash
-npm start
-```
+- TODO (readme will be updated with instructions to do so) - here is the list of the currently supported Viem contracts - ![LIST](https://github.com/wevm/viem/tree/main/src/account-abstraction/accounts/implementations)
 
 No tests are currently configured, but the project includes vitest as a dev dependency for future test implementation.
+
+
+---
+
+Say hi to ![@makevoid](https://x.com/makevoid) on X (Twitter)
