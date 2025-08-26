@@ -101,11 +101,11 @@ Currently configured for **Ethereum Sepolia Testnet**:
 
 ## Switch to Solady Contracts
 
-- TODO (readme will be updated with instructions to do so) - here is the list of the currently supported Viem contracts - ![LIST](https://github.com/wevm/viem/tree/main/src/account-abstraction/accounts/implementations)
+- TODO (readme will be updated with instructions to do so) - here is the list of the currently supported Viem contracts - [LIST](https://github.com/wevm/viem/tree/main/src/account-abstraction/accounts/implementations)
 
 No tests are currently configured, but the project includes vitest as a dev dependency for future test implementation.
 
 
 ---
 
-Say hi to ![@makevoid](https://x.com/makevoid) on X (Twitter)
+Say hi to [@makevoid](https://x.com/makevoid) on X (Twitter)
