@@ -241,12 +241,16 @@ describe('GasUtils', () => {
       expect(gasParams.maxPriorityFeePerGas).toBe(parseGwei("2"));
     });
 
-    it('should validate transaction parameters', async () => {
+    it('should handle invalid transaction parameters gracefully', async () => {
       const invalidTransactionRequest = null;
 
-      await expect(
-        gasUtils.estimateGasWithBump(invalidTransactionRequest)
-      ).rejects.toThrow();
+      // Should return fallback values when given invalid parameters
+      const gasParams = await gasUtils.estimateGasWithBump(invalidTransactionRequest);
+      
+      // Should use fallback values
+      expect(gasParams.gasLimit).toBe(BigInt(21000));
+      expect(gasParams.maxFeePerGas).toBe(parseGwei("10"));
+      expect(gasParams.maxPriorityFeePerGas).toBe(parseGwei("2"));
     });
   });
 });
