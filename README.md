@@ -5,14 +5,14 @@ A Node.js application for experimenting with Ethereum Account Abstraction using 
 ## What This Project Does
 
 This project demonstrates how to:
-- Create and manage Coinbase Smart Accounts (ERC-4337)
-- Automatically fund smart accounts from EOA when needed
+- Create and manage Smart Accounts (ERC-4337)
+- Automatically fund smart accounts from EOA at startup if needed
 - Execute user operations with optimized gas settings
 - Handle self-funded transactions without requiring a paymaster
 
-## Architecture
+Just fund the EOA account that you load into the repo with test eths and you will be good to go to run the project.
 
-The project follows a modular OOP design:
+## Lib files
 
 - **`SmartAccountManager`**: Main class that orchestrates smart account operations
 - **`FundingUtils`**: Handles automatic funding of smart accounts from EOA
