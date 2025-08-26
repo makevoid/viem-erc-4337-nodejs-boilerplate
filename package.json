@@ -11,5 +11,8 @@
   "dependencies": {
     "permissionless": "^0.2.54",
     "viem": "^2.35.1"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
   }
 }
