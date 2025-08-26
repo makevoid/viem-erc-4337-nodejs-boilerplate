@@ -1,39 +1,28 @@
-import { createPublicClient, http, parseEther } from "viem";
-import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
-import { sepolia } from "viem/chains";
-import { privateKeyToAccount } from "viem/accounts";
-import dotenv from "dotenv";
+import { SmartAccountManager } from "./SmartAccountManager.js";
+import { parseEther } from "viem";
 
-dotenv.config();
+async function main() {
+  try {
+    // Create smart account manager
+    const manager = new SmartAccountManager();
+    
+    // Initialize account
+    await manager.initialize();
+    
+    // Display current balances
+    await manager.displayBalances();
+    
+    // Send a self-transaction (this will auto-fund if needed)
+    const result = await manager.sendSelfTransaction(parseEther("0.001"));
+    
+    console.log("Transaction completed successfully!");
+    console.log("Final balances:");
+    await manager.displayBalances();
+    
+  } catch (error) {
+    console.error("Error:", error.message);
+    process.exit(1);
+  }
+}
 
-const owner = privateKeyToAccount(process.env.PRIVATE_KEY);
-
-const account = await toCoinbaseSmartAccount({
-  client,
-  owners: [owner],
-  version: "1.1",
-});
-
-// TODO: get balance here
-
-const client = createPublicClient({
-  chain: sepolia,
-  transport: http(),
-});
-
-const bundlerClient = createBundlerClient({
-  client,
-  transport: http("https://public.pimlico.io/v2/1/rpc"),
-});
-
-const hash = await bundlerClient.sendUserOperation({
-  account,
-  calls: [
-    {
-      to: owner.address, // NOTE: send transaction to yourself
-      value: parseEther("0.001"),
-    },
-  ],
-});
-
-const receipt = await bundlerClient.waitForUserOperationReceipt({ hash });
+main();
