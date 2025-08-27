@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run test:*)",
+      "Bash(anvil:*)",
+      "Bash(anvil)",
+      "Bash(forge install:*)",
+      "Bash(forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast)",
+      "Bash(forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --force)",
+      "Bash(forge script test/foundry/script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
