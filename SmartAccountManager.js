@@ -42,7 +42,7 @@ export class SmartAccountManager {
       
       if (process.env.NODE_ENV === 'test') {
         // Use Solady smart accounts for testing with local Anvil deployment
-        const factoryAddress = "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F";
+        const factoryAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
         console.log(`Initializing Solady smart account with factory: ${factoryAddress}`);
         console.log(`Salt: ${this.salt}`);
         
@@ -69,7 +69,7 @@ export class SmartAccountManager {
       console.error('Environment:', process.env.NODE_ENV || 'production');
       console.error('Owner address:', this.owner.address);
       if (process.env.NODE_ENV === 'test') {
-        console.error('Factory address:', "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F");
+        console.error('Factory address:', "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
         console.error('Salt:', this.salt);
       }
       console.error('Full error:', error);

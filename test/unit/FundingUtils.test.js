@@ -100,22 +100,11 @@ describe('FundingUtils', () => {
 
     it('should throw error when EOA balance is insufficient for funding', async () => {
       const eoaBalance = await fundingUtils.checkBalance(testWalletClient.account.address);
-      // Use a very large amount that exceeds even test account balance
-      const excessiveMinBalance = eoaBalance + parseEther("10000"); 
+      const excessiveMinBalance = eoaBalance + parseEther("10000");
       
-      try {
-        const result = await fundingUtils.ensureFunding(targetAddress, excessiveMinBalance);
-        if (result === null) {
-          // In our test environment with 10k+ ETH, the funding might not be attempted
-          // This is actually correct behavior - if balance is sufficient, no funding needed
-          expect(result).toBeNull();
-        } else {
-          // Should not reach here
-          expect.fail('Expected insufficient balance error');
-        }
-      } catch (error) {
-        expect(error.message).toMatch(/Insufficient EOA balance to fund smart account/);
-      }
+      await expect(
+        fundingUtils.ensureFunding(targetAddress, excessiveMinBalance)
+      ).rejects.toThrow(/Insufficient EOA balance to fund smart account/);
     });
 
     it('should calculate funding requirements correctly', async () => {

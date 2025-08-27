@@ -237,59 +237,24 @@ describe('Smart Account Complete Integration Tests', () => {
       expect(calls[0].value).toBe(parseEther("0.001"));
     });
 
-    it('should handle transfer attempts (expected to fail in test environment)', async () => {
+    it('should fail transfer attempts due to missing ERC-4337 infrastructure', async () => {
       const transferAmount = parseEther("0.001");
       
-      try {
-        const result = await manager.sendSelfTransaction(transferAmount);
-        
-        // If it succeeds (unlikely in test env), verify structure
-        expect(result).toHaveProperty('hash');
-        expect(result).toHaveProperty('receipt');
-        
-        console.log(`Unexpected success! Transfer hash: ${result.hash}`);
-      } catch (error) {
-        // Expected in test environment without full ERC-4337 infrastructure
-        console.log(`Transfer failed as expected: ${error.message.substring(0, 100)}...`);
-        
-        const errorMessage = error.message.toLowerCase();
-        const expectedErrors = [
-          'getnonce',
-          'contract function',
-          'returned no data',
-          'bundler',
-          'useroperation'
-        ];
-        
-        const hasExpectedError = expectedErrors.some(expected => errorMessage.includes(expected));
-        expect(hasExpectedError).toBe(true);
-      }
+      await expect(manager.sendSelfTransaction(transferAmount)).rejects.toThrow();
     });
 
-    it('should handle inter-smart-account transfers (expected to fail)', async () => {
+    it('should fail inter-smart-account transfers due to missing ERC-4337 infrastructure', async () => {
       const transferAmount = parseEther("0.001");
       const targetAddress = manager2.account.address;
       
-      try {
-        const result = await manager.transferTo(targetAddress, transferAmount);
-        
-        expect(result).toHaveProperty('hash');
-        console.log(`Inter-account transfer successful: ${result.hash}`);
-      } catch (error) {
-        console.log(`Inter-account transfer failed as expected: ${error.message.substring(0, 100)}...`);
-        
-        const errorMessage = error.message.toLowerCase();
-        const expectedErrors = ['getnonce', 'contract function', 'returned no data'];
-        const hasExpectedError = expectedErrors.some(expected => errorMessage.includes(expected));
-        expect(hasExpectedError).toBe(true);
-      }
+      await expect(manager.transferTo(targetAddress, transferAmount)).rejects.toThrow();
     });
   });
 
   describe('Contract Integration', () => {
     it('should verify deployed Solady contracts exist', async () => {
-      const entryPointAddress = "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f";
-      const factoryAddress = "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F";
+      const entryPointAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+      const factoryAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
       
       const entryPointCode = await testClient.getCode({ address: entryPointAddress });
       const factoryCode = await testClient.getCode({ address: factoryAddress });
@@ -328,17 +293,12 @@ describe('Smart Account Complete Integration Tests', () => {
         rpcUrl: TEST_CONFIG.rpcUrl,
         chain: TEST_CONFIG.chain,
         bundlerUrl: TEST_CONFIG.rpcUrl,
-        minBalance: parseEther("100"), // Impossible to fund
+        minBalance: parseEther("20000"), // More than available in test account
       });
 
       await highMinManager.initialize();
 
-      try {
-        await highMinManager.ensureFunding();
-      } catch (error) {
-        expect(error.message).toContain('Insufficient EOA balance');
-        console.log(`Correctly caught insufficient balance scenario`);
-      }
+      await expect(highMinManager.ensureFunding()).rejects.toThrow('Insufficient EOA balance');
     });
 
     it('should handle invalid addresses and network errors', async () => {
